@@ -55,12 +55,9 @@ function RateLimiter (options) {
       batch.exec(function (err, resultArr) {
         if (err) return cb(err);
 
-        // IORedis : [null, <response>] 
+        // IORedis : [null, <response>]
         // node_redis : [<response>]
         
-console.log(resultArr);
-console.log('-');
-
         if(typeof resultArr[0] == 'array' && resultArr[0].length == 2 && resultArr[0][1] != null) {
           resultArr[0] = resultArr[0][1];
           resultArr[1] = resultArr[1][1];
