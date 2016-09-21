@@ -29,6 +29,7 @@ function RateLimiter (options) {
       };
     } else {
       zrangeToUserSet = function(arr) {
+        //return Array.isArray(arr) ? arr.map(Number) : Number(arr);
         return arr.map(Number);
       };
     }
@@ -53,7 +54,21 @@ function RateLimiter (options) {
       batch.expire(key, Math.ceil(interval / 1000000)); // convert to seconds, as used by redis ttl.
       batch.exec(function (err, resultArr) {
         if (err) return cb(err);
-    
+
+        // IORedis : [null, <response>] 
+        // node_redis : [<response>]
+        
+console.log(resultArr);
+console.log('-');
+
+        if(typeof resultArr[0] == 'array' && resultArr[0].length == 2 && resultArr[0][1] != null) {
+          resultArr[0] = resultArr[0][1];
+          resultArr[1] = resultArr[1][1];
+          resultArr[2] = resultArr[2][1];
+          resultArr[3] = resultArr[3][1];
+        }
+        
+
         var userSet = zrangeToUserSet(resultArr[1]);
 
         var tooManyInInterval = userSet.length >= maxInInterval;
@@ -121,6 +136,3 @@ function RateLimiter (options) {
 }
 
 module.exports = RateLimiter;
-
-
-
