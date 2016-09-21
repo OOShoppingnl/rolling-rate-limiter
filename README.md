@@ -93,6 +93,27 @@ This allows multiple processes (e.g. multiple instances of a server application)
 
 ```
 
+#### Using IORedis 
+
+You can use an [`ioredis`](https://github.com/luin/ioredis) Client too, but you need to supply an extra option to the `RateLimiter` constructor:
+
+```js
+
+  var RateLimiter = require("rolling-rate-limiter");
+  var Redis = require("ioredis");
+  var client = Redis.createClient(config);
+
+  var limiter = RateLimiter({
+    redis: client,
+    redis_type: "io-redis", // the value "io_redis" and "ioredis" do the same thing
+    namespace: "UserLoginLimiter", // optional: allows one redis instance to handle multiple types of rate limiters. defaults to "rate-limiter-{string of 8 random characters}"
+    interval: 1000,
+    maxInInterval: 10,
+    minDifference: 100
+  });
+
+```
+
 ### As a middleware
 You can easily use this module to set up a request rate limiter middleware in Express.
 ```javascript
